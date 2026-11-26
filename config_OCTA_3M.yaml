@@ -1,0 +1,51 @@
+# Paths relative to the working directory; use one run/config per dataset.
+seed: 1
+model:
+  in_channels: 1            # grayscale; set 3 for RGB
+  channels: [24, 48, 96, 192]
+  bank_dim: 8
+  expert_dim: 16
+  region: 4
+  temperature: 0.5
+  heads: 2
+  checkpoint_sampling: true
+  outer_ratio: 1.5
+data:
+  train_csv: D:/0_data/eye_datas/OCTA_3M/manifests/train.csv
+  val_csv: D:/0_data/eye_datas/OCTA_3M/manifests/val.csv
+  test_csv: D:/0_data/eye_datas/OCTA_3M/manifests/test.csv
+  size: 304
+  resize: true             # resize to 256x256 when necessary
+  mask_threshold: null     # auto: 0/1 or 0/255 (foreground white)
+  thin_width: 3.0          # input-image pixel units
+  cache_dir: geometry_cache/OCTA_3M_256_resize
+  workers: 0              # Windows single-process loading
+training:
+  output_dir: runs/OCTA-3M-new
+  batch_size: 8
+  accum_steps: 2         # effective batch approximately 2; profile larger batches first
+  epochs: 200
+  full_model: false      # true only for immediate full-module smoke tests
+#  lr: 0.0003
+  lr: 0.0005
+  min_lr: 0.000001
+  weight_decay: 0.0001
+  clip_grad: 5.0
+  amp: true
+  expert_start: 10
+  router_start: 20
+  utility_start: 30
+  perturb_start: 50
+  utility_rois: 16
+  weights: {geo: 0.2, expert: 0.2, utility: 0.1, pert: 0.3}
+  upl:
+    prob: 0.5
+    ratio: 0.25
+    strength: [0.3, 0.6]
+    value_guided: true
+    hard_negative: true
+    reestimate: true
+    consistency: true
+  save_every_epoch: true
+  log_interval: 10
+  threshold: 0.5
